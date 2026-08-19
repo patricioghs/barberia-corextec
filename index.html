@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="description" content="Plataforma de administración para barberías: agenda, barberos, clientes, ventas, comisiones y recordatorios." />
+  <title>Barbería Corextec · Gestión</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">B</div>
+        <div>
+          <strong id="brandName">Barber Studio</strong>
+          <span>Gestión Corextec</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navegación principal">
+        <button class="nav-item active" data-view="dashboard"><span>▦</span> Dashboard</button>
+        <button class="nav-item" data-view="agenda"><span>◷</span> Agenda</button>
+        <button class="nav-item" data-view="barbers"><span>✂</span> Barberos</button>
+        <button class="nav-item" data-view="clients"><span>♙</span> Clientes</button>
+        <button class="nav-item" data-view="sales"><span>$</span> Ventas</button>
+        <button class="nav-item" data-view="reminders"><span>◉</span> Recordatorios</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span> Configuración</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="demo-pill"><span class="status-dot"></span> Demo interactiva</div>
+        <small>Los datos se guardan en este navegador.</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-button mobile-menu" id="mobileMenuBtn" aria-label="Abrir menú">☰</button>
+          <div>
+            <p class="eyebrow" id="todayLabel">Panel de gestión</p>
+            <h1 id="viewTitle">Dashboard</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="quick-search">
+            <span>⌕</span>
+            <input id="globalSearch" type="search" placeholder="Buscar cliente o cita..." aria-label="Buscar" />
+            <div id="searchResults" class="search-results hidden"></div>
+          </div>
+          <button class="button secondary" id="seedResetBtn">Restaurar demo</button>
+          <button class="button primary" id="quickAppointmentBtn">+ Nueva cita</button>
+        </div>
+      </header>
+
+      <section class="view active" id="dashboardView">
+        <div class="metrics-grid" id="dashboardMetrics"></div>
+
+        <div class="dashboard-grid two-columns">
+          <article class="panel chart-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Facturación</p>
+                <h2>Ventas mensuales</h2>
+              </div>
+              <select id="salesChartYear" class="compact-select" aria-label="Año de ventas"></select>
+            </div>
+            <div id="salesChart" class="bar-chart" role="img" aria-label="Gráfico de ventas mensuales"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Servicios</p>
+                <h2>Distribución del mes</h2>
+              </div>
+            </div>
+            <div class="service-chart-layout">
+              <div id="serviceDonut" class="donut-chart" aria-label="Distribución de servicios"></div>
+              <div id="serviceLegend" class="legend-list"></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="dashboard-grid two-columns bottom-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Hoy</p>
+                <h2>Próximas citas</h2>
+              </div>
+              <button class="text-button" data-jump="agenda">Ver agenda →</button>
+            </div>
+            <div id="todayAppointments" class="timeline-list"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Equipo</p>
+                <h2>Rendimiento de barberos</h2>
+              </div>
+              <button class="text-button" data-jump="barbers">Ver equipo →</button>
+            </div>
+            <div id="barberRanking" class="ranking-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="agendaView">
+        <div class="toolbar panel compact-panel">
+          <div class="segmented" id="agendaDateFilter">
+            <button class="segment active" data-range="today">Hoy</button>
+            <button class="segment" data-range="week">7 días</button>
+            <button class="segment" data-range="all">Todas</button>
+          </div>
+          <div class="toolbar-right">
+            <select id="agendaBarberFilter" class="compact-select"><option value="all">Todos los barberos</option></select>
+            <button class="button primary" id="agendaAddBtn">+ Agendar hora</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Fecha / hora</th><th>Cliente</th><th>Servicio</th><th>Barbero</th><th>Estado</th><th>Valor</th><th></th></tr></thead>
+              <tbody id="appointmentsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="barbersView">
+        <div class="section-head">
+          <div><p class="section-note">Control individual de producción y comisiones.</p></div>
+          <button class="button primary" id="addBarberBtn">+ Agregar barbero</button>
+        </div>
+        <div class="cards-grid" id="barbersGrid"></div>
+      </section>
+
+      <section class="view" id="clientsView">
+        <div class="section-head">
+          <div class="inline-search"><span>⌕</span><input id="clientSearch" type="search" placeholder="Buscar por nombre o teléfono" /></div>
+          <button class="button primary" id="addClientBtn">+ Nuevo cliente</button>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Cliente</th><th>Contacto</th><th>Visitas</th><th>Última visita</th><th>Total gastado</th><th></th></tr></thead>
+              <tbody id="clientsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="salesView">
+        <div class="section-head">
+          <div class="sales-summary" id="salesSummary"></div>
+          <button class="button primary" id="addSaleBtn">+ Registrar servicio</button>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Fecha</th><th>Cliente</th><th>Servicio</th><th>Barbero</th><th>Medio de pago</th><th>Total</th><th></th></tr></thead>
+              <tbody id="salesTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="remindersView">
+        <div class="dashboard-grid two-columns">
+          <article class="panel">
+            <div class="panel-header"><div><p class="panel-kicker">Próximas 24 horas</p><h2>Recordatorios pendientes</h2></div></div>
+            <div id="pendingReminders" class="reminder-list"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><div><p class="panel-kicker">Historial</p><h2>Recordatorios enviados</h2></div></div>
+            <div id="sentReminders" class="reminder-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="settingsView">
+        <div class="settings-grid">
+          <article class="panel">
+            <div class="panel-header"><div><p class="panel-kicker">Negocio</p><h2>Datos generales</h2></div></div>
+            <div class="form-grid one-column">
+              <label>Nombre de la barbería<input id="settingBusinessName" type="text" /></label>
+              <label>Teléfono<input id="settingPhone" type="text" /></label>
+              <label>Dirección<input id="settingAddress" type="text" /></label>
+              <label>Horario<input id="settingHours" type="text" /></label>
+              <button class="button primary" id="saveSettingsBtn">Guardar configuración</button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><div><p class="panel-kicker">Catálogo</p><h2>Servicios y precios</h2></div><button class="button secondary small" id="addServiceBtn">+ Servicio</button></div>
+            <div id="servicesList" class="settings-list"></div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header"><div><p class="panel-kicker" id="modalKicker">Gestión</p><h2 id="modalTitle">Nuevo registro</h2></div><button class="icon-button" id="modalClose" aria-label="Cerrar">×</button></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
